@@ -34,9 +34,9 @@ const musicSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    lyrics: {
+    youtubeLink: {
         type: String,
-        required: false, // Optional field
+        required: false,
     },
 }, { timestamps: true });
 const Music = mongoose.model("Music", musicSchema);

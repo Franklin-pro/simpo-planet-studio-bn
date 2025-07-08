@@ -13,10 +13,14 @@ const gallerySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    artist: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Artist",
-        required: true,
+    likeCount: {
+        type: Number,
+        default: 0,
+    },
+    
+    videoUrl: {
+        type: String,
+        required: false,
     },
     createdAt: {
         type: Date,

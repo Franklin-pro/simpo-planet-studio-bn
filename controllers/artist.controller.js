@@ -1,12 +1,30 @@
 import Artist from "../models/artist.model.js";
+import { cloudinaryUpload } from "../utils/cloudinary.js";
 
 
 const createArtist = async (req, res) => {
     try {
         const { name, bio, imageUrl, socialLinks } = req.body;
-        const newArtist = new Artist({ name, bio, imageUrl, socialLinks });
-        await newArtist.save();
-        res.status(201).json({ message: "Artist created successfully", artist: newArtist });
+
+        let cloudinaryResult = null;
+        if (imageUrl) {
+            cloudinaryResult = await cloudinaryUpload(imageUrl, "artists");
+        }
+
+        const artist = new Artist({
+            name,
+            bio,
+            imageUrl: cloudinaryResult?.secure_url || "",
+            socialLinks
+        });
+
+        await artist.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Artist created successfully",
+            data: artist
+        });
     } catch (error) {
         res.status(500).json({ message: "Error creating artist", error: error.message });
     }

@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
+import galleryRoutes from './routes/gallery.route.js';
 
 
 const app = express();
@@ -12,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use('/api/v1')
+app.use('/api/v1/gallery', galleryRoutes);
 
 
 app.listen(PORT, () => {

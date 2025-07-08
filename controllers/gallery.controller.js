@@ -1,16 +1,34 @@
-import Gallery from "../models/gallery.model";
+import Gallery from "../models/gallery.model.js";
+import { cloudinaryUpload } from "../utils/cloudinary.js";
 
 
-const createGalleryItem = async (req, res) => {
+export const createGalleryItem = async (req, res) => {
     try {
-        const { title, description, imageUrl, artist } = req.body;
-        const newGalleryItem = new Gallery({ title, description, imageUrl, artist });
-        await newGalleryItem.save();
-        res.status(201).json({ message: "Gallery item created successfully", galleryItem: newGalleryItem });
+        const { title, image,video, description} = req.body;
+
+        let cloudinaryResult = null;
+        if (image) {
+            cloudinaryResult = await cloudinaryUpload(image, "gallerys");
+        }
+
+        const gallery = new Gallery({
+            title,
+            image: cloudinaryResult?.secure_url || "",
+            description,
+            video: video || "",
+        });
+
+        await gallery.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Product created successfully",
+            data: product
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error creating gallery item", error: error.message });
+        res.status(500).json({ message: error.message });
     }
-}
+};
 const getGalleryItems = async (req, res) => {
     try {
         const galleryItems = await Gallery.find().populate('artist');
@@ -30,12 +48,25 @@ const getGalleryItemById = async (req, res) => {
         res.status(500).json({ message: "Error fetching gallery item", error: error.message });
     }
 }
+const likeGalleryItem = async (req, res) => {
+    try {
+        const galleryItem = await Gallery.findById(req.params.id);
+        if (!galleryItem) {
+            return res.status(404).json({ message: "Gallery item not found" });
+        }
+        galleryItem.likeCount += 1;
+        await galleryItem.save();
+        res.status(200).json({ message: "Gallery item liked successfully", galleryItem });
+    } catch (error) {
+        res.status(500).json({ message: "Error liking gallery item", error: error.message });
+    }
+}
 const updateGalleryItem = async (req, res) => {
     try {
-        const { title, description, imageUrl, artist } = req.body;
+        const { title, description, imageUrl} = req.body;
         const updatedGalleryItem = await Gallery.findByIdAndUpdate(
             req.params.id,
-            { title, description, imageUrl, artist },
+            { title, description, imageUrl },
             { new: true }
         );
         if (!updatedGalleryItem) {
@@ -58,9 +89,9 @@ const deleteGalleryItem = async (req, res) => {
     }
 }
 export {
-    createGalleryItem,
     getGalleryItems,
     getGalleryItemById,
     updateGalleryItem,
-    deleteGalleryItem
+    deleteGalleryItem,
+    likeGalleryItem,
 };
