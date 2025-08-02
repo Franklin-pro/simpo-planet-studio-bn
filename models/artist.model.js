@@ -7,6 +7,14 @@ const artistSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    management:{
+        type: String,
+        required: true,
+    },
+    age:{
+        type: String,
+        required: true,
+    },
     bio: {
         type: String,
         required: true,

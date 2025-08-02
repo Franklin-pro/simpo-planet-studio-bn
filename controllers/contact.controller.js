@@ -1,4 +1,4 @@
-import Contact from "../models/contact.model";
+import Contact from "../models/contact.model.js";
 import asyncHandler from "express-async-handler";
 
 // @desc    Create a new contact

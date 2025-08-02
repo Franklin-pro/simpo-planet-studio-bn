@@ -8,7 +8,7 @@ import {
 } from "../controllers/artist.controller.js";
 const router = express.Router();
 
-router.post("/", createArtist);
+router.post("/add", createArtist);
 router.get("/", getArtists);
 router.get("/:id", getArtistById);
 router.put("/:id", updateArtist);

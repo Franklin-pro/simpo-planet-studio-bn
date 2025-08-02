@@ -4,7 +4,7 @@ import { cloudinaryUpload } from "../utils/cloudinary.js";
 
 const createArtist = async (req, res) => {
     try {
-        const { name, bio, imageUrl, socialLinks } = req.body;
+        const { name, bio, imageUrl, socialLinks,age,management } = req.body;
 
         let cloudinaryResult = null;
         if (imageUrl) {
@@ -15,7 +15,9 @@ const createArtist = async (req, res) => {
             name,
             bio,
             imageUrl: cloudinaryResult?.secure_url || "",
-            socialLinks
+            socialLinks,
+            age,
+            management
         });
 
         await artist.save();
@@ -50,10 +52,10 @@ const getArtistById = async (req, res) => {
 }
 const updateArtist = async (req, res) => {
     try {
-        const { name, bio, imageUrl, socialLinks } = req.body;
+        const { name, bio, imageUrl, socialLinks,age,management } = req.body;
         const updatedArtist = await Artist.findByIdAndUpdate(
             req.params.id,
-            { name, bio, imageUrl, socialLinks },
+            { name, bio, imageUrl, socialLinks,age,management },
             { new: true }
         );
         if (!updatedArtist) {

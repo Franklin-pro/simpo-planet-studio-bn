@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.post("/", createGalleryItem);
+router.post("/add-gallery", createGalleryItem);
 router.get("/", getGalleryItems);
 router.get("/:id", getGalleryItemById);
 router.put("/:id", updateGalleryItem);

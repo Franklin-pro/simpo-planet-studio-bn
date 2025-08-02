@@ -1,20 +1,16 @@
+
 import Music from "../models/music.model.js";
 import { cloudinaryUpload } from "../utils/cloudinary.js";
 
 const createMusic = async (req, res) => {
     try {
-        const { title, artist, album, genre, releaseDate, duration, coverImageUrl, audioFileUrl, youtubeLink } = req.body;
-
+        const { title, artist, album, genre, releaseDate, duration, coverImageUrl, youtubeLink } = req.body;
+        
         let cloudinaryCoverResult = null;
         if (coverImageUrl) {
-            cloudinaryCoverResult = await cloudinaryUpload(coverImageUrl, "music/covers");
+            cloudinaryCoverResult = await cloudinaryUpload(coverImageUrl, "musics");
         }
-
-        let cloudinaryAudioResult = null;
-        if (audioFileUrl) {
-            cloudinaryAudioResult = await cloudinaryUpload(audioFileUrl, "music/audios");
-        }
-
+        
         const music = new Music({
             title,
             artist,
@@ -23,12 +19,10 @@ const createMusic = async (req, res) => {
             releaseDate,
             duration,
             coverImageUrl: cloudinaryCoverResult?.secure_url || "",
-            audioFileUrl: cloudinaryAudioResult?.secure_url || "",
             youtubeLink
         });
-
+        
         await music.save();
-
         res.status(201).json({
             success: true,
             message: "Music created successfully",
@@ -59,10 +53,10 @@ const getMusicById = async (req, res) => {
 }
 const updateMusic = async (req, res) => {
     try {
-        const { title, artist, album, genre, releaseDate, duration, coverImageUrl, audioFileUrl, youtubeLink } = req.body;
+        const { title, artist, album, genre, releaseDate, duration, coverImageUrl, youtubeLink } = req.body;
         const updatedMusic = await Music.findByIdAndUpdate(
             req.params.id,
-            { title, artist, album, genre, releaseDate, duration, coverImageUrl, audioFileUrl, youtubeLink },
+            { title, artist, album, genre, releaseDate, duration, coverImageUrl, youtubeLink },
             { new: true }
         );
         if (!updatedMusic) {
