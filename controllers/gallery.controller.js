@@ -22,8 +22,8 @@ export const createGalleryItem = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: "Product created successfully",
-            data: product
+            message: "Gallery created successfully",
+            data: gallery
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -31,7 +31,7 @@ export const createGalleryItem = async (req, res) => {
 };
 const getGalleryItems = async (req, res) => {
     try {
-        const galleryItems = await Gallery.find().populate('artist');
+        const galleryItems = await Gallery.find();
         res.status(200).json(galleryItems);
     } catch (error) {
         res.status(500).json({ message: "Error fetching gallery items", error: error.message });

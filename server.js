@@ -7,6 +7,7 @@ import artistRoutes from './routes/artist.routes.js';
 import loginRoutes from './routes/login.routes.js';
 import contactRoutes from './routes/contact.route.js';
 import musicRoutes  from './routes/music.route.js';
+import producerRoutes from './routes/producer.routes.js';
 import cors from 'cors';
 
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/v1/artist', artistRoutes);
 app.use('/api/v1/admin', loginRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/music', musicRoutes);
+app.use('/api/v1/producer', producerRoutes);
 
 
 

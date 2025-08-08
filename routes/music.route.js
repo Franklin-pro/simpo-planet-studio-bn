@@ -1,5 +1,5 @@
 import express from 'express';
-import { createMusic, deleteMusic, getMusic, getMusicById, updateMusic } from '../controllers/music.controller.js';
+import { createMusic, deleteMusic, getMusic, getMusicById, updateMusic,incrementPlayCount } from '../controllers/music.controller.js';
 
 const router = express.Router();
 
@@ -13,4 +13,7 @@ router.get('/:id', getMusicById);
 router.put('/:id', updateMusic);
 // Route to delete a music entry
 router.delete('/:id', deleteMusic);
+// Route to increment play count
+router.put('/:id/play', incrementPlayCount);
+
 export default router;

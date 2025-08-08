@@ -9,7 +9,7 @@ const gallerySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    imageUrl: {
+    image: {  // Changed from imageUrl to image
         type: String,
         required: true,
     },
