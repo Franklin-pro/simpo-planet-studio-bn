@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.get('/', getProducers);
-router.post('/', createProducer);
+router.post('/add-producer', createProducer);
 router.get('/:id', getProducerById);
 router.put('/:id', updateProducer);
 router.delete('/:id',deleteProducer);

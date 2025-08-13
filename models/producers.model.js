@@ -1,5 +1,34 @@
 import mongoose from 'mongoose';
 
+const creditSchema = new mongoose.Schema({
+  project: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  role: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  year: {
+    type: Number,
+    min: 1900,
+    max: new Date().getFullYear(),
+    default: new Date().getFullYear()
+  }
+});
+
+const socialMediaSchema = new mongoose.Schema({
+  instagram: { type: String, trim: true, default: '' },
+  twitter: { type: String, trim: true, default: '' },
+  facebook: { type: String, trim: true, default: '' },
+  spotify: { type: String, trim: true, default: '' },
+  soundCloud: { type: String, trim: true, default: '' },
+  youtube: { type: String, trim: true, default: '' },
+  appleMusic: { type: String, trim: true, default: '' }
+});
+
 const producerSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -8,32 +37,59 @@ const producerSchema = new mongoose.Schema({
   },
   level: {
     type: String,
-    enum: ['Beginner', 'Intermediate', 'Advanced', 'Professional'],
-    default: 'Beginner'
+    enum: ['Junior', 'Mid-level', 'Senior', 'Legendary'],
+    default: 'Junior'
   },
   image: {
     type: String,
-    required: [true, 'Image URL is required'],
-    validate: {
-      validator: function(v) {
-        return /^(https?:\/\/).+\.(jpg|jpeg|png|gif|webp)$/i.test(v);
-      },
-      message: props => `${props.value} is not a valid image URL!`
-    }
+    default: ''
   },
   bio: {
     type: String,
+    required: [true, 'Bio is required'],
+    minlength: [50, 'Bio must be at least 50 characters'],
     maxlength: [500, 'Bio cannot be longer than 500 characters'],
-    default: ''
-  },
-  socialLinks: {
-    type: Map,
-    of: String,
-    default: {}
+    trim: true
   },
   genres: {
     type: [String],
+    default: [],
+    validate: {
+      validator: function(v) {
+        return v.length > 0;
+      },
+      message: 'At least one genre is required'
+    }
+  },
+  skills: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: function(v) {
+        return v.length > 0;
+      },
+      message: 'At least one skill is required'
+    }
+  },
+  contactEmail: {
+    type: String,
+    required: [true, 'Contact email is required'],
+    match: [/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 'Invalid email format'],
+    trim: true
+  },
+  yearsExperience: {
+    type: Number,
+    required: [true, 'Years of experience is required'],
+    min: [0, 'Years of experience cannot be negative'],
+    max: [50, 'Years of experience cannot exceed 50']
+  },
+  credits: {
+    type: [creditSchema],
     default: []
+  },
+  socialMedia: {
+    type: socialMediaSchema,
+    default: {}
   },
   isFeatured: {
     type: Boolean,
@@ -49,18 +105,15 @@ const producerSchema = new mongoose.Schema({
   }
 });
 
-// Add timestamp middleware
 producerSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
 });
 
-// Static method example
 producerSchema.statics.findByLevel = function(level) {
   return this.find({ level: new RegExp(level, 'i') });
 };
 
-// Instance method example
 producerSchema.methods.getProfileSummary = function() {
   return {
     name: this.name,
