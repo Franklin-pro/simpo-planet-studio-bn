@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "simpo-bn": "file:.."
+  }
+}
