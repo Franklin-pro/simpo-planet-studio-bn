@@ -9,6 +9,7 @@ const createProducer = async (req, res) => {
       name,
       level,
       bio,
+      image,
       contactEmail,
       yearsExperience
     } = req.body;
@@ -25,21 +26,23 @@ const createProducer = async (req, res) => {
       if (req.body.credits) credits = JSON.parse(req.body.credits);
       if (req.body.socialMedia) socialMedia = JSON.parse(req.body.socialMedia);
     } catch (parseError) {
-      return res.status(400).json({ success: false, message: "Invalid JSON format in array/object fields", error: parseError.message });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid JSON format in array/object fields", 
+        error: parseError.message 
+      });
     }
 
-    let imageUrl = '';
-    if (req.file) {
-      const cloudinaryResult = await cloudinaryUpload(req.file.path, "producers");
-      imageUrl = cloudinaryResult?.secure_url || '';
-      // Clean up temp file
-      fs.unlinkSync(req.file.path);
+    let imageUrl = null;
+    if (image) {
+      const cloudinaryResult = await cloudinaryUpload(image, "producers");
+      imageUrl = cloudinaryResult.secure_url; // Store only the secure_url
     }
 
     const producer = new Producer({
       name,
       level,
-      image: imageUrl,
+      image: imageUrl, // Use the secure_url instead of the full Cloudinary response
       bio,
       genres,
       skills,
@@ -57,7 +60,11 @@ const createProducer = async (req, res) => {
       data: producer
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error creating producer", error: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: "Error creating producer", 
+      error: error.message 
+    });
   }
 };
 
@@ -157,15 +164,42 @@ const updateProducer = async (req, res) => {
 };
 
 const deleteProducer = async (req, res) => {
-  try {
-    const producer = await Producer.findByIdAndDelete(req.params.id);
-    if (!producer) {
-      return res.status(404).json({ success: false, message: "Producer not found" });
+    try {
+        const producer = await Producer.findById(req.params.id);
+
+        if (!producer) {
+            return res.status(404).json({
+                success: false,
+                message: "producer not found"
+            });
+        }
+
+        // Delete from Cloudinary if public IDs exist
+        if (producer.coverPublicId) {
+            await cloudinary.uploader.destroy(producer.coverPublicId);
+        }
+
+        if (producer.audioPublicId) {
+            await cloudinary.uploader.destroy(producer.audioPublicId, {
+                resource_type: "video" // necessary for audio files
+            });
+        }
+
+        // Soft delete in DB
+        await producer.findByIdAndUpdate(req.params.id, { isActive: false });
+
+        res.status(200).json({
+            success: true,
+            message: "producer deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting producer:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error deleting producer",
+            error: error.message
+        });
     }
-    res.status(200).json({ success: true, message: "Producer deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Error deleting producer", error: error.message });
-  }
 };
 
 export {

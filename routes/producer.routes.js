@@ -4,9 +4,8 @@ import { getProducers, createProducer, getProducerById, updateProducer, deletePr
 
 const router = express.Router();
 
-
-router.get('/', getProducers);
 router.post('/add-producer', createProducer);
+router.get('/', getProducers);
 router.get('/:id', getProducerById);
 router.put('/:id', updateProducer);
 router.delete('/:id',deleteProducer);
