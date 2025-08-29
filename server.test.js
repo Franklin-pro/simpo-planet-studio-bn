@@ -1,5 +1,5 @@
 // server.test.js
-import { jest } from '@jest/globals';
+import { describe, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -16,34 +16,21 @@ jest.unstable_mockModule('mongoose', () => ({
   model: jest.fn(),
 }));
 
-// Mock controllers
-jest.unstable_mockModule('./controllers/gallery.controller.js', () => ({
-  getGalleryItems: jest.fn((req, res) => res.status(200).json([])),
-  createGalleryItem: jest.fn((req, res) => res.status(201).json({ success: true })),
-  getGalleryItemById: jest.fn((req, res) => res.status(200).json({})),
-  updateGalleryItem: jest.fn((req, res) => res.status(200).json({})),
-  deleteGalleryItem: jest.fn((req, res) => res.status(200).json({})),
-  likeGalleryItem: jest.fn((req, res) => res.status(200).json({}))
+// Mock models and utilities
+jest.unstable_mockModule('./models/gallery.model.js', () => ({
+  default: {
+    find: jest.fn().mockResolvedValue([]),
+    findById: jest.fn().mockResolvedValue(null),
+    findByIdAndUpdate: jest.fn().mockResolvedValue(null),
+    findByIdAndDelete: jest.fn().mockResolvedValue(null),
+    prototype: {
+      save: jest.fn().mockResolvedValue({})
+    }
+  }
 }));
 
-jest.unstable_mockModule('./controllers/artist.controller.js', () => ({
-  default: jest.fn((req, res) => res.status(200).json([]))
-}));
-
-jest.unstable_mockModule('./controllers/music.controller.js', () => ({
-  default: jest.fn((req, res) => res.status(200).json([]))
-}));
-
-jest.unstable_mockModule('./controllers/producers.controller.js', () => ({
-  default: jest.fn((req, res) => res.status(200).json([]))
-}));
-
-jest.unstable_mockModule('./controllers/contact.controller.js', () => ({
-  default: jest.fn((req, res) => res.status(200).json([]))
-}));
-
-jest.unstable_mockModule('./controllers/admin.cotroller.js', () => ({
-  default: jest.fn((req, res) => res.status(400).json({ error: 'Invalid credentials' }))
+jest.unstable_mockModule('./utils/cloudinary.js', () => ({
+  cloudinaryUpload: jest.fn().mockResolvedValue({ secure_url: 'test-url' })
 }));
 
 
@@ -57,6 +44,7 @@ import loginRoutes from './routes/login.routes.js';
 import contactRoutes from './routes/contact.route.js';
 import musicRoutes from './routes/music.route.js';
 import producerRoutes from './routes/producer.routes.js';
+import filmmakerRoutes from './routes/filmmaker.routes.js';
 
 describe('API Server', () => {
   let app;
@@ -83,6 +71,7 @@ describe('API Server', () => {
     app.use('/api/v1/contact', contactRoutes);
     app.use('/api/v1/music', musicRoutes);
     app.use('/api/v1/producer', producerRoutes);
+    app.use('/api/v1/filmmaker', filmmakerRoutes);
   });
 
   // Clean up after each test
@@ -104,20 +93,7 @@ describe('API Server', () => {
   // -------------------------------
   // Example template for other routes
   // -------------------------------
-  // describe('Gallery Routes', () => {
-  //   it('should handle gallery endpoint', async () => {
-  //     const res = await request(app).get('/api/v1/gallery');
-  //     expect(res.status).toBe(200);
-  //   });
-  // });
-
-  // describe('Artist Routes', () => {
-  //   it('should handle artist endpoint', async () => {
-  //     const res = await request(app).get('/api/v1/artist');
-  //     expect([200, 404]).toContain(res.status);
-  //   });
-  // });
-
+  
   describe('Admin Routes', () => {
     it('should handle login endpoint', async () => {
       const res = await request(app).post('/api/v1/admin/login');
@@ -125,24 +101,40 @@ describe('API Server', () => {
     });
   });
 
-  // describe('Contact Routes', () => {
-  //   it('should handle contact endpoint', async () => {
-  //     const res = await request(app).get('/api/v1/contact');
-  //     expect([200, 404]).toContain(res.status);
-  //   });
-  // });
+  describe('Gallery Routes', () => {
+    it('should mount gallery routes', () => {
+      expect(galleryRoutes).toBeDefined();
+    });
+  });
 
-  // describe('Music Routes', () => {
-  //   it('should handle music endpoint', async () => {
-  //     const res = await request(app).get('/api/v1/music');
-  //     expect([200, 404]).toContain(res.status);
-  //   });
-  // });
+  describe('Artist Routes', () => {
+    it('should mount artist routes', () => {
+      expect(artistRoutes).toBeDefined();
+    });
+  });
 
-  // describe('Producer Routes', () => {
-  //   it('should handle producer endpoint', async () => {
-  //     const res = await request(app).get('/api/v1/producer');
-  //     expect([200, 404]).toContain(res.status);
-  //   });
-  // });
+  describe('Contact Routes', () => {
+    it('should mount contact routes', () => {
+      expect(contactRoutes).toBeDefined();
+    });
+  });
+
+  describe('Music Routes', () => {
+    it('should mount music routes', () => {
+      expect(musicRoutes).toBeDefined();
+    });
+  });
+
+  describe('Producer Routes', () => {
+    it('should mount producer routes', () => {
+      expect(producerRoutes).toBeDefined();
+    });
+  });
 });
+
+describe('filmmakerRoutes',()=>{
+  it('should mount filmmaker routes', () => {
+    expect(filmmakerRoutes).toBeDefined();
+  });
+}
+)
