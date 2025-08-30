@@ -1,76 +1,62 @@
 import Admin from "../models/admin.model.js";
+import jwt from "jsonwebtoken";
 
-const allowedAdmin = {
-    email: "simpoplanet@gmail.com",
-    password: "Simpo@123",
-    username: "Simpo Admin",
-    role: "superadmin"
-};
-
-const createAdmin = async (req, res) => {
+const createAccount = async (req, res) => {
     try {
-        const { username, password, email, role } = req.body;
+        const { username, password, email, userType } = req.body;
 
-        const existingAdmin = await Admin.findOne({ email });
-        if (existingAdmin) {
-            return res.status(400).json({ message: "Admin with this email already exists" });
+        const existingUser = await Admin.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User with this email already exists" });
         }
 
-        const admin = new Admin({
+        const user = new Admin({
             username,
             password,
             email,
-            role
+            userType: userType || "user"
         });
 
-        await admin.save();
+        await user.save();
 
         res.status(201).json({
             success: true,
-            message: "Admin created successfully",
-            data: admin
+            message: "Account created successfully",
+            data: user
         });
     } catch (error) {
-        res.status(500).json({ message: "Error creating admin", error: error.message });
+        res.status(500).json({ message: "Error creating account", error: error.message });
     }
 };
 
-const loginAdmin = async (req, res) => {
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Allow hardcoded admin login without checking DB
-        if (email === allowedAdmin.email && password === allowedAdmin.password) {
-            return res.status(200).json({
-                success: true,
-                message: "Admin logged in successfully",
-                data: {
-                    email: allowedAdmin.email,
-                    username: allowedAdmin.username,
-                    role: allowedAdmin.role
-                },
-                source: "hardcoded"
-            });
+        const user = await Admin.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const admin = await Admin.findOne({ email });
-        if (!admin) {
-            return res.status(404).json({ message: "Admin not found" });
-        }
-
-        if (admin.password !== password) {
+        if (user.password !== password) {
             return res.status(401).json({ message: "Invalid password" });
         }
 
+        const token = jwt.sign(
+            { id: user._id, email: user.email, userType: user.userType },
+            process.env.JWT_SECRET || "fallback_secret",
+            { expiresIn: "24h" }
+        );
+
         res.status(200).json({
             success: true,
-            message: "Admin logged in successfully",
-            data: admin,
-            source: "database"
+            message: "Login successful",
+            data: user,
+            token
         });
     } catch (error) {
-        res.status(500).json({ message: "Error logging in admin", error: error.message });
+        res.status(500).json({ message: "Error logging in", error: error.message });
     }
 };
 
-export { createAdmin, loginAdmin };
+export { createAccount, login };

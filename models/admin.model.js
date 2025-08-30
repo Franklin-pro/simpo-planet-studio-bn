@@ -19,10 +19,10 @@ const adminSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-    role: {
+  userType: {
     type: String,
-    enum: ['admin', 'superadmin'],
-    default: 'admin',
+    enum: ['admin', 'user'],
+    default: 'user',
   },
 });
 const Admin = mongoose.model("Admin", adminSchema);

@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.post("/", createFilmmaker);
+router.post("/create", createFilmmaker);
 router.get("/", getFilmmakers);
 router.get("/:id", getFilmmakerById);
 router.put("/:id", updateFilmmaker);
