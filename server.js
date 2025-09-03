@@ -9,6 +9,7 @@ import contactRoutes from './routes/contact.route.js';
 import musicRoutes from './routes/music.route.js';
 import producerRoutes from './routes/producer.routes.js';
 import filmmakerRoutes from './routes/filmmaker.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 import cors from 'cors';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/music', musicRoutes);
 app.use('/api/v1/producer', producerRoutes);
 app.use('/api/v1/filmmaker', filmmakerRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 // Start server after MongoDB connection
 mongoose.connect(MONGO_URI)
