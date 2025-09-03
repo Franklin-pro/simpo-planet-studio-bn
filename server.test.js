@@ -1,5 +1,5 @@
 // server.test.js
-import { describe, jest } from '@jest/globals';
+import { describe, it, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -45,6 +45,7 @@ import contactRoutes from './routes/contact.route.js';
 import musicRoutes from './routes/music.route.js';
 import producerRoutes from './routes/producer.routes.js';
 import filmmakerRoutes from './routes/filmmaker.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 describe('API Server', () => {
   let app;
@@ -72,6 +73,7 @@ describe('API Server', () => {
     app.use('/api/v1/music', musicRoutes);
     app.use('/api/v1/producer', producerRoutes);
     app.use('/api/v1/filmmaker', filmmakerRoutes);
+    app.use('/api/v1/dashboard', dashboardRoutes);
   });
 
   // Clean up after each test
@@ -98,6 +100,13 @@ describe('API Server', () => {
     it('should handle login endpoint', async () => {
       const res = await request(app).post('/api/v1/admin/login');
       expect([400, 401, 422, 500]).toContain(res.status);
+    });
+    it('should handle create account endpoint', async () => {
+      const res = await request(app).post('/api/v1/admin/create');
+      expect([400, 422, 500]).toContain(res.status);
+    });
+    it('should mount admin routes', () => {
+      expect(loginRoutes).toBeDefined();
     });
   });
 
@@ -132,9 +141,14 @@ describe('API Server', () => {
   });
 });
 
-describe('filmmakerRoutes',()=>{
-  it('should mount filmmaker routes', () => {
-    expect(filmmakerRoutes).toBeDefined();
+  describe('Filmmaker Routes', () => {
+    it('should mount filmmaker routes', () => {
+      expect(filmmakerRoutes).toBeDefined();
+    });
   });
-}
-)
+
+  describe('Dashboard Routes', () => {
+    it('should mount dashboard routes', () => {
+      expect(dashboardRoutes).toBeDefined();
+    });
+  });
