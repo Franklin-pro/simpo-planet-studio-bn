@@ -58,5 +58,22 @@ const login = async (req, res) => {
         res.status(500).json({ message: "Error logging in", error: error.message });
     }
 };
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await Admin.find().select('-password');
+        
+        const maskedUsers = users.map(user => ({
+            ...user.toObject(),
+            email: user.email.replace(/(.{3}).*(@.*)/, '$1******$2')
+        }));
+        
+        res.status(200).json({
+            success: true,
+            data: maskedUsers
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error: error.message });
+    }
+};
 
-export { createAccount, login };
+export { createAccount, login, getAllUsers };
