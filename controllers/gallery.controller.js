@@ -101,10 +101,31 @@ const deleteGalleryItem = async (req, res) => {
         res.status(500).json({ message: "Error deleting gallery item", error: error.message });
     }
 }
+
+const shareGallery = async (req, res) => {
+    try {
+        const galleryItem = await Gallery.findById(req.params.id);
+        if (!galleryItem) {
+            return res.status(404).json({ message: "Gallery item not found" });
+        }
+
+        const shareLink = `${req.protocol}://${req.get('host')}/api/v1/gallery/${req.params.id}`;
+        
+        res.status(200).json({
+            success: true,
+            message: "Share link generated successfully",
+            shareLink,
+            galleryItem
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error generating share link", error: error.message });
+    }
+};
 export {
     getGalleryItems,
     getGalleryItemById,
     updateGalleryItem,
     deleteGalleryItem,
     likeGalleryItem,
+    shareGallery,
 };
