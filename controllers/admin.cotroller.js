@@ -64,7 +64,8 @@ const getAllUsers = async (req, res) => {
         
         const maskedUsers = users.map(user => ({
             ...user.toObject(),
-            email: user.email.replace(/(.{3}).*(@.*)/, '$1******$2')
+            email: user.email.replace(/(.{3}).*(@.*)/, '$1******$2'),
+            joinedAt: user.createdAt || 'Unknown'
         }));
         
         res.status(200).json({
