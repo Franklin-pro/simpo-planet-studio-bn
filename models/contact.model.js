@@ -9,12 +9,10 @@ const contactSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
     },
     phone: {
         type: String,
         required: true,
-        unique: true,
     },
     message: {
         type: String,
@@ -24,7 +22,7 @@ const contactSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-}, 
+},
 {
     timestamps: true,
 });
