@@ -1,5 +1,6 @@
 import Producer from "../models/producers.model.js";
 import { cloudinaryUpload } from "../utils/cloudinary.js";
+import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 
 const createProducer = async (req, res) => {
@@ -174,19 +175,14 @@ const deleteProducer = async (req, res) => {
             });
         }
 
-        // Delete from Cloudinary if public IDs exist
-        if (producer.coverPublicId) {
-            await cloudinary.uploader.destroy(producer.coverPublicId);
+        // Delete image from Cloudinary if exists
+        if (producer.image) {
+            const publicId = producer.image.split('/').pop().split('.')[0];
+            await cloudinary.uploader.destroy(`producers/${publicId}`);
         }
 
-        if (producer.audioPublicId) {
-            await cloudinary.uploader.destroy(producer.audioPublicId, {
-                resource_type: "video" // necessary for audio files
-            });
-        }
-
-        // Soft delete in DB
-        await producer.findByIdAndUpdate(req.params.id, { isActive: false });
+        // Delete from DB
+        await Producer.findByIdAndDelete(req.params.id);
 
         res.status(200).json({
             success: true,
